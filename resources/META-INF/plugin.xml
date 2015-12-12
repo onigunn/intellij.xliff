@@ -30,7 +30,7 @@
 
   <actions>
     <!-- Add your actions here -->
-    <action id="typo3.translation.create" class="de.onigunn.intellij.typo3.CreateXLFTranslationAction"
+    <action id="typo3.translation.create" class="de.onigunn.intellij.typo3.action.CreateXLFTranslationAction"
             text="Create XLF Translation" description="Creates XLF translation unit element on selected text" >
       <add-to-group group-id="RefactoringMenu" anchor="last"/>
       <keyboard-shortcut keymap="$default" first-keystroke="shift meta T" second-keystroke="shift ctrl meta T"/>
