@@ -1,5 +1,8 @@
-package de.onigunn.intellij.typo3.action;
+package de.onigunn.intellij.xliff.action;
 
+import com.intellij.notification.Notification;
+import com.intellij.notification.NotificationType;
+import com.intellij.notification.NotificationsManager;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
@@ -13,6 +16,9 @@ import com.intellij.openapi.fileChooser.FileChooserFactory;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
+import com.intellij.openapi.ui.popup.Balloon;
+import com.intellij.openapi.ui.popup.BalloonBuilder;
+import com.intellij.openapi.ui.popup.JBPopupFactory;
 import com.intellij.openapi.vfs.VirtualFile;
 import de.onigunn.intellij.utils.XmlUtility;
 import org.jetbrains.annotations.NotNull;
@@ -30,7 +36,7 @@ import java.io.IOException;
 /**
  * Created by onigunn on 11.12.15.
  */
-public class CreateXLFTranslationAction extends AnAction {
+public class CreateXLIFFTranslationAction extends AnAction {
 
 
     private VirtualFile selectedFile;
@@ -50,7 +56,7 @@ public class CreateXLFTranslationAction extends AnAction {
             return;
         }
 
-        final String translationKeyId = Messages.showInputDialog(project, "Please enter your translation key", "Translation Key", Messages.getQuestionIcon());
+        final String translationKeyId = Messages.showInputDialog(project, "Please enter your translation key:", "Translation Key", Messages.getQuestionIcon());
         selectedFile = openFileChooserDialog(project);
 
         if (selectedFile != null) {
@@ -58,7 +64,6 @@ public class CreateXLFTranslationAction extends AnAction {
             try {
                 updateTranslationDocument(selectedText, translationKeyId);
                 replaceSelectedTextWithViewHelper(project, editor, translationKeyId);
-
             } catch (SAXException | IOException | ParserConfigurationException e1) {
                 e1.printStackTrace();
             }
