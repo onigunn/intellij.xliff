@@ -32,7 +32,7 @@
   <actions>
     <!-- Add your actions here -->
     <action id="typo3.translation.create" class="de.onigunn.intellij.xliff.action.CreateXLIFFTranslationAction"
-            text="Create XLF Translation" description="Creates XLF translation unit element on selected text" >
+            text="Create/Update XLIFF translation" description="Creates or updates XLIFF translation unit element on selection" >
       <add-to-group group-id="RefactoringMenu2" anchor="last" />
       <keyboard-shortcut keymap="$default" first-keystroke="shift meta T" second-keystroke="shift ctrl meta T"/>
     </action>
