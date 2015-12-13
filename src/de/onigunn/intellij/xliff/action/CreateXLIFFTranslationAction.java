@@ -42,19 +42,23 @@ public class CreateXLIFFTranslationAction extends AnAction {
     private VirtualFile selectedFile;
 
     @Override
+    public void update(AnActionEvent e) {
+        Editor editor = e.getData(CommonDataKeys.EDITOR);
+
+        if (editor == null) {
+            e.getPresentation().setEnabledAndVisible(false);
+            return;
+        }
+
+        String selectedText = editor.getSelectionModel().getSelectedText();
+        e.getPresentation().setEnabledAndVisible(selectedText != null);
+    }
+
+    @Override
     public void actionPerformed(AnActionEvent e) {
         Project project = e.getProject();
         final Editor editor = e.getData(CommonDataKeys.EDITOR);
-
-        if (editor == null) {
-            return;
-        }
-
         final String selectedText = editor.getSelectionModel().getSelectedText();
-
-        if (selectedText == null) {
-            return;
-        }
 
         final String translationKeyId = Messages.showInputDialog(project, "Please enter your translation key:", "Translation Key", Messages.getQuestionIcon());
         selectedFile = openFileChooserDialog(project);
@@ -128,5 +132,4 @@ public class CreateXLIFFTranslationAction extends AnAction {
             }
         });
     }
-
 }
