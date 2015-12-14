@@ -9,6 +9,8 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
+import com.intellij.psi.PsiFile;
+import com.intellij.psi.codeStyle.CodeStyleManager;
 import de.onigunn.intellij.xliff.XLIFFDocument;
 import org.xml.sax.SAXException;
 
@@ -52,6 +54,7 @@ public class CreateXLIFFTranslationAction extends AbstractXLIFFAction {
     @Override
     protected void doAction(AnActionEvent e) {
         final Editor editor = e.getData(CommonDataKeys.EDITOR);
+        final PsiFile psiFile = e.getData(CommonDataKeys.PSI_FILE);
         final String selectedText = editor.getSelectionModel().getSelectedText();
         final String unitId = Messages.showInputDialog(e.getProject(), "Please enter your translation key:", "Translation Key", Messages.getQuestionIcon());
 
@@ -60,6 +63,7 @@ public class CreateXLIFFTranslationAction extends AbstractXLIFFAction {
             try {
                 updateTranslationDocument(unitId, selectedText);
                 replaceSelectedTextWithViewHelper(unitId, e.getProject(), editor);
+                CodeStyleManager.getInstance(e.getProject()).reformat(psiFile);
             } catch (SAXException | IOException | ParserConfigurationException e1) {
                 e1.printStackTrace();
             }
