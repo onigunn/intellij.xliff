@@ -1,7 +1,7 @@
 <idea-plugin version="2">
     <id>de.onigunn.intellij.xliff</id>
     <name>TYPO3 XLIFF Utility</name>
-    <version>0.0.5</version>
+    <version>0.0.6</version>
     <vendor email="info@onigunn.de" url="http://www.onigunn.de">onigunn.de</vendor>
 
     <description><![CDATA[
@@ -10,6 +10,11 @@
     ]]></description>
 
     <change-notes><![CDATA[
+    <b>0.0.6</b>
+      <ul>
+      <li>improved file select on invoking action</li>
+      </ul>
+
     <b>0.0.5</b>
       <ul>
       <li>fixed incompatibility on PhpStorm</li>

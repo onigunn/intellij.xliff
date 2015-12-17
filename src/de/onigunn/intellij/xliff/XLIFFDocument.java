@@ -3,7 +3,6 @@ package de.onigunn.intellij.xliff;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.util.indexing.FileContentImpl;
 import de.onigunn.intellij.utils.XmlUtility;
-import org.jetbrains.annotations.NotNull;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
