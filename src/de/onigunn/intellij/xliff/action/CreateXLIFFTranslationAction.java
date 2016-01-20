@@ -10,6 +10,7 @@ import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.psi.PsiFile;
+import com.intellij.psi.PsiManager;
 import com.intellij.psi.codeStyle.CodeStyleManager;
 import de.onigunn.intellij.xliff.XLIFFDocument;
 import org.xml.sax.SAXException;
@@ -32,6 +33,7 @@ public class CreateXLIFFTranslationAction extends AbstractXLIFFAction {
                 Document document = FileDocumentManager.getInstance().getDocument(selectedFile);
                 if (document != null) {
                     document.setText(xliffDocument.toString());
+                    FileDocumentManager.getInstance().saveDocument(document);
                 }
 
             }

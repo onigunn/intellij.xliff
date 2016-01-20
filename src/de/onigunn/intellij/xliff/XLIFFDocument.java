@@ -40,6 +40,15 @@ public class XLIFFDocument {
         this.bodyNode.appendChild(transUnit);
     }
 
+    public void createTargetUnit (String id, String value) {
+        Element sourceElement = this.content.getElementById(id);
+
+        Element targetElement = this.content.createElement("target");
+        targetElement.appendChild(this.content.createTextNode(value));
+
+        sourceElement.appendChild(targetElement);
+    }
+
     @Override
     public String toString() {
         return XmlUtility.documentToString(this.content);

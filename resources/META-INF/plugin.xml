@@ -1,7 +1,7 @@
 <idea-plugin version="2">
     <id>de.onigunn.intellij.xliff</id>
     <name>TYPO3 XLIFF Utility</name>
-    <version>0.0.6</version>
+    <version>0.0.7</version>
     <vendor email="info@onigunn.de" url="http://www.onigunn.de">onigunn.de</vendor>
 
     <description><![CDATA[
@@ -10,6 +10,10 @@
     ]]></description>
 
     <change-notes><![CDATA[
+    <b>0.0.7</b>
+      <ul>
+      <li>fixed exceptions on code format</li>
+      </ul>
     <b>0.0.6</b>
       <ul>
       <li>improved file select on invoking action</li>
@@ -60,6 +64,7 @@
     <depends>com.intellij.modules.platform</depends>
 
     <actions>
+
         <!-- Add your actions here -->
         <action id="typo3.translation.create" class="de.onigunn.intellij.xliff.action.CreateXLIFFTranslationAction"
                 text="Create/Update XLIFF translation"
@@ -67,6 +72,13 @@
             <add-to-group group-id="RefactoringMenu" anchor="last"/>
             <add-to-group group-id="GenerateGroup" anchor="last"/>
         </action>
+
+        <!--<action id="typo3.translation.updatetarget" class="de.onigunn.intellij.xliff.action.CreateXLIFFTargetAction"-->
+                <!--text="Create/Update XLIFF target element"-->
+                <!--description="Creates or updates XLIFF target element">-->
+            <!--<add-to-group group-id="RefactoringMenu" anchor="last"/>-->
+            <!--<add-to-group group-id="GenerateGroup" anchor="last"/>-->
+        <!--</action>-->
     </actions>
 
 </idea-plugin>
