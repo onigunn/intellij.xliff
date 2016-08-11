@@ -1,5 +1,6 @@
 package de.onigunn.intellij.utils;
 
+import com.intellij.openapi.application.Application;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
@@ -37,7 +38,7 @@ public class XmlUtility {
             transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
             transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
             transformer.transform(new DOMSource(document), new StreamResult(sw));
-            return sw.toString();
+            return sw.toString().replace("\r\n", "\n");
         } catch (TransformerException e) {
             throw new IllegalAccessError("Couldn't transform document to string");
         }
