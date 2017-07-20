@@ -1,5 +1,9 @@
 package de.onigunn.intellij.xliff.action;
 
+import com.intellij.codeInsight.actions.AbstractLayoutCodeProcessor;
+import com.intellij.codeInsight.actions.OptimizeImportsProcessor;
+import com.intellij.codeInsight.actions.RearrangeCodeProcessor;
+import com.intellij.codeInsight.actions.ReformatCodeProcessor;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.application.ApplicationManager;
@@ -9,14 +13,19 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
+import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.psi.PsiDocumentManager;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import com.intellij.psi.codeStyle.CodeStyleManager;
+import com.intellij.psi.util.PsiUtilCore;
 import de.onigunn.intellij.xliff.XLIFFDocument;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Created by onigunn on 11.12.15.
@@ -48,7 +57,9 @@ public class CreateXLIFFTranslationAction extends AbstractXLIFFAction {
                 final int selectionEnd = editor.getSelectionModel().getSelectionEnd();
 
                 final String replacement = String.format("<f:translate key=\"%s\" />", translationKeyId);
-                editor.getDocument().replaceString(selectionStart, selectionEnd, replacement);
+                final Document editorDocument = editor.getDocument();
+                editorDocument.replaceString(selectionStart, selectionEnd, replacement);
+                FileDocumentManager.getInstance().saveDocument(editorDocument);
             }
         });
     }
@@ -58,18 +69,29 @@ public class CreateXLIFFTranslationAction extends AbstractXLIFFAction {
         final Editor editor = e.getData(CommonDataKeys.EDITOR);
         final PsiFile psiFile = e.getData(CommonDataKeys.PSI_FILE);
         final String selectedText = editor.getSelectionModel().getSelectedText();
-        final String unitId = Messages.showInputDialog(e.getProject(), "Please enter your translation key:", "Translation Key", Messages.getQuestionIcon());
+        final Project project = e.getProject();
+        final String unitId = Messages.showInputDialog(project, "Please enter your translation key:", "Translation Key", Messages.getQuestionIcon());
 
         if (selectedFile != null) {
 
             try {
                 updateTranslationDocument(unitId, selectedText);
-                replaceSelectedTextWithViewHelper(unitId, e.getProject(), editor);
-                CodeStyleManager.getInstance(e.getProject()).reformat(psiFile);
+                replaceSelectedTextWithViewHelper(unitId, project, editor);
+
+                PsiDocumentManager.getInstance(project).commitAllDocuments();
+                AbstractLayoutCodeProcessor processor = new ReformatCodeProcessor(project, convertToPsiFile(project), null, false);
+                processor = new RearrangeCodeProcessor(processor);
+                processor.run();
             } catch (SAXException | IOException | ParserConfigurationException e1) {
                 e1.printStackTrace();
             }
 
         }
     }
+
+    public PsiFile convertToPsiFile(Project project) {
+        PsiManager psiManager = PsiManager.getInstance(project);
+        return psiManager.findFile(selectedFile);
+    }
+
 }
