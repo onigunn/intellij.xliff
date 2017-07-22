@@ -1,23 +1,11 @@
 package de.onigunn.intellij.xliff;
 
 import com.intellij.openapi.util.Pair;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.xml.XmlFile;
 import com.intellij.psi.xml.XmlTag;
-import com.intellij.util.indexing.FileContentImpl;
-import com.intellij.xml.util.XmlTagUtil;
-import com.intellij.xml.util.XmlUtil;
-import de.onigunn.intellij.utils.XmlUtility;
-import org.ini4j.InvalidFileFormatException;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.xml.sax.SAXException;
-
-import javax.xml.parsers.ParserConfigurationException;
-import java.io.IOException;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Created by onigunn on 13.12.15.
@@ -28,26 +16,52 @@ public class XLIFFDocument {
 
     public XLIFFDocument(PsiFile file) throws InvalidXliffFileException {
         XmlFile xmlFile = (XmlFile) file;
-
-        XmlUtility.isValidXliffDocument(xmlFile);
-
+        isValidXliffDocument(xmlFile);
         bodySubTag = xmlFile.getRootTag().findFirstSubTag("file").findFirstSubTag("body");
     }
 
     public void createTranslationUnit(Pair<String, Boolean> userInput, String value) {
         if (!this.bodySubTag.isWritable() && !this.bodySubTag.isValid()) return;
 
+        String transUnitId = userInput.getFirst();
+        XmlTag transUnitTag = findTransUnitByIdAttribute(transUnitId);
+        if (transUnitTag == null) {
+            transUnitTag = createTransUnitTag(transUnitId, userInput.getSecond());
+        }
+        transUnitTag.findFirstSubTag("source").getValue().setText(value);
+    }
 
+    @NotNull
+    private XmlTag createTransUnitTag(String transUnitId, Boolean preserveSpace) {
         XmlTag transUnitTag = bodySubTag.createChildTag("trans-unit", bodySubTag.getNamespace(), null, false);
-        transUnitTag.setAttribute("id", userInput.getFirst());
+        transUnitTag.setAttribute("id", transUnitId);
 
-        if (userInput.getSecond()) {
+        if (preserveSpace) {
             transUnitTag.setAttribute("space", "xml", "preserve");
         }
 
-        XmlTag sourceTag = transUnitTag.createChildTag("source", bodySubTag.getNamespace(), XmlTagUtil.getCDATAQuote(value), false);
+        XmlTag sourceTag = transUnitTag.createChildTag("source", bodySubTag.getNamespace(), "", false);
         transUnitTag.addSubTag(sourceTag, false);
+        return bodySubTag.addSubTag(transUnitTag, false);
+    }
 
-        bodySubTag.addSubTag(transUnitTag, false);
+    @Nullable
+    private XmlTag findTransUnitByIdAttribute(String id) {
+        for (XmlTag xmlTag : bodySubTag.getSubTags()) {
+            if (xmlTag.getAttribute("id").getValue().equals(id)) {
+                return xmlTag;
+            }
+        }
+        return null;
+    }
+
+    private void isValidXliffDocument(XmlFile file) throws InvalidXliffFileException {
+        XmlTag rootTag = file.getRootTag();
+        if (rootTag == null) throw new InvalidXliffFileException("xliff");
+
+        XmlTag fileTag = rootTag.findFirstSubTag("file");
+        if (fileTag == null) throw new InvalidXliffFileException("file");
+
+        if (fileTag.findFirstSubTag("body") == null) throw new InvalidXliffFileException("body");
     }
 }
