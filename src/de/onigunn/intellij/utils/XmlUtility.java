@@ -1,6 +1,10 @@
 package de.onigunn.intellij.utils;
 
 import com.intellij.openapi.application.Application;
+import com.intellij.psi.xml.XmlFile;
+import com.intellij.psi.xml.XmlTag;
+import de.onigunn.intellij.xliff.InvalidXliffFileException;
+import org.ini4j.InvalidFileFormatException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
@@ -21,26 +25,13 @@ import java.io.StringWriter;
  */
 public class XmlUtility {
 
-    public static Document parseXmlDocument(InputStream inputStream) throws ParserConfigurationException, SAXException, IOException {
-        DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder documentBuilder = builderFactory.newDocumentBuilder();
-        return documentBuilder.parse(inputStream);
-    }
+    public static void isValidXliffDocument(XmlFile file) throws InvalidXliffFileException {
+        XmlTag rootTag = file.getRootTag();
+        if (rootTag == null) throw new InvalidXliffFileException("xliff");
 
-    public static String documentToString(Node document)  {
-        try {
-            StringWriter sw = new StringWriter();
-            TransformerFactory tf = TransformerFactory.newInstance();
-            tf.setAttribute("indent-number", 2);
-            Transformer transformer = tf.newTransformer();
-            transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
-            transformer.setOutputProperty(OutputKeys.METHOD, "xml");
-            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-            transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
-            transformer.transform(new DOMSource(document), new StreamResult(sw));
-            return sw.toString().replace("\r\n", "\n");
-        } catch (TransformerException e) {
-            throw new IllegalAccessError("Couldn't transform document to string");
-        }
+        XmlTag fileTag = rootTag.findFirstSubTag("file");
+        if (fileTag == null) throw new InvalidXliffFileException("file");
+
+        if (fileTag.findFirstSubTag("body") == null) throw new InvalidXliffFileException("bodz");
     }
 }

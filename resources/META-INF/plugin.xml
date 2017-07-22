@@ -10,6 +10,14 @@
     ]]></description>
 
     <change-notes><![CDATA[
+    <b>0.0.10</b>
+    <ul>
+        <li>tag values are now CDATA quoted if required</li>
+        <li>preserve space can now applied on trans-unit tags</li>
+        <li>a lot of internal refactoring/improvement</li>
+    </ul>
+
+
     <b>0.0.9</b>
     <ul>
     <li>Changed document format option</li>
@@ -27,33 +35,6 @@
     <b>0.0.6</b>
       <ul>
       <li>improved file select on invoking action</li>
-      </ul>
-
-    <b>0.0.5</b>
-      <ul>
-      <li>fixed incompatibility on PhpStorm</li>
-      <li>added action to command popup</li>
-      </ul>
-
-      <b>0.0.4</b>
-      <ul>
-      <li>added automatic code reformatting</li>
-      </ul>
-
-      <b>0.0.3</b>
-      <ul>
-      <li>Updated plugin name</li>
-      <li>Even better description</li>
-      </ul>
-
-      <b>0.0.2</b>
-      <ul>
-      <li>Improved my first very minimalistic plugin description</li>
-      </ul>
-
-      <b>0.0.1</b>
-      <ul>
-      <li>initial Release</li>
       </ul>
     ]]>
     </change-notes>
