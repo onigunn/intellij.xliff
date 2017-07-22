@@ -1,7 +1,7 @@
-<idea-plugin version="2">
+<idea-plugin>
     <id>de.onigunn.intellij.xliff</id>
     <name>TYPO3 XLIFF Utility</name>
-    <version>0.0.9</version>
+    <version>0.1.0</version>
     <vendor email="info@onigunn.de" url="http://www.onigunn.de">onigunn.de</vendor>
 
     <description><![CDATA[
@@ -10,7 +10,7 @@
     ]]></description>
 
     <change-notes><![CDATA[
-    <b>0.0.10</b>
+    <b>0.1.0</b>
     <ul>
         <li>tag values are now CDATA quoted if required</li>
         <li>preserve space can now applied on trans-unit tags</li>
