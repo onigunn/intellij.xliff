@@ -13,10 +13,13 @@ import org.jetbrains.annotations.Nullable;
 public class XLIFFDocument {
 
     private XmlTag bodySubTag;
+    private boolean valid = false;
 
-    public XLIFFDocument(PsiFile file) throws InvalidXliffFileException {
+
+    public XLIFFDocument(PsiFile file)  {
         XmlFile xmlFile = (XmlFile) file;
-        isValidXliffDocument(xmlFile);
+        validateDocument(xmlFile);
+        this.valid = true;
         bodySubTag = xmlFile.getRootTag().findFirstSubTag("file").findFirstSubTag("body");
     }
 
@@ -55,13 +58,21 @@ public class XLIFFDocument {
         return null;
     }
 
-    private void isValidXliffDocument(XmlFile file) throws InvalidXliffFileException {
+    private void validateDocument(XmlFile file) {
         XmlTag rootTag = file.getRootTag();
-        if (rootTag == null) throw new InvalidXliffFileException("xliff");
+        this.valid = rootTag == null;
 
         XmlTag fileTag = rootTag.findFirstSubTag("file");
-        if (fileTag == null) throw new InvalidXliffFileException("file");
+        this.valid = fileTag == null;
 
-        if (fileTag.findFirstSubTag("body") == null) throw new InvalidXliffFileException("body");
+        this.valid = fileTag.findFirstSubTag("body") == null;
+    }
+
+    public boolean isValid() {
+        return valid;
+    }
+
+    public void setValid(boolean valid) {
+        this.valid = valid;
     }
 }

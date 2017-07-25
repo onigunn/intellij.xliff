@@ -49,7 +49,8 @@
     -->
 
     <extensions defaultExtensionNs="com.intellij">
-        <!-- Add your extensions here -->
+        <fileTypeFactory implementation="de.onigunn.intellij.xliff.editor.XliffEditorProvider"/>
+        <fileEditorProvider implementation="de.onigunn.intellij.xliff.editor.XliffEditorProvider"/>
     </extensions>
 
     <depends>com.intellij.modules.platform</depends>
