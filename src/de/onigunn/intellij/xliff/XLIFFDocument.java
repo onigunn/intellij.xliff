@@ -1,7 +1,10 @@
 package de.onigunn.intellij.xliff;
 
 import com.intellij.openapi.util.Pair;
+import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
+import com.intellij.psi.PsiManager;
+import com.intellij.psi.impl.file.impl.FileManager;
 import com.intellij.psi.xml.XmlFile;
 import com.intellij.psi.xml.XmlTag;
 import org.jetbrains.annotations.NotNull;
@@ -12,13 +15,14 @@ import org.jetbrains.annotations.Nullable;
  */
 public class XLIFFDocument {
 
+    final private VirtualFile virtualFile;
     private XmlTag bodySubTag;
     private boolean valid = false;
-
 
     public XLIFFDocument(PsiFile file)  {
         XmlFile xmlFile = (XmlFile) file;
         validateDocument(xmlFile);
+        this.virtualFile = file.getVirtualFile();
         this.valid = true;
         bodySubTag = xmlFile.getRootTag().findFirstSubTag("file").findFirstSubTag("body");
     }
@@ -72,7 +76,7 @@ public class XLIFFDocument {
         return valid;
     }
 
-    public void setValid(boolean valid) {
-        this.valid = valid;
+    public VirtualFile getVirtualFile() {
+        return virtualFile;
     }
 }
