@@ -10,18 +10,16 @@ public class CreateTranslationInput extends Messages.InputDialog {
 
     private JCheckBox preserveSpaceCheckbox;
     private JCheckBox inlineViewHelperCheckbox;
-    private boolean preserveSpace;
 
-    public CreateTranslationInput(boolean preserveSpace) {
+    public CreateTranslationInput(boolean preserveSpace, boolean useInlineViewHelper) {
         super("Translation Key", "Translation Key",  Messages.getQuestionIcon(), "", new NonEmptyInputValidator());
-        this.preserveSpace = preserveSpace;
 
         preserveSpaceCheckbox.setText("Preserve space?");
         preserveSpaceCheckbox.setSelected(preserveSpace);
         preserveSpaceCheckbox.setEnabled(true);
 
         inlineViewHelperCheckbox.setText("Use Inline View Helper syntax?");
-        inlineViewHelperCheckbox.setSelected(false);
+        inlineViewHelperCheckbox.setSelected(useInlineViewHelper);
         inlineViewHelperCheckbox.setEnabled(true);
     }
 

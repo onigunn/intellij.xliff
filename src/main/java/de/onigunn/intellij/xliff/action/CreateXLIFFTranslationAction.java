@@ -26,6 +26,7 @@ import org.jetbrains.annotations.NotNull;
 public class CreateXLIFFTranslationAction extends AbstractXLIFFAction {
 
     protected boolean preserveSpaces = false;
+    protected boolean useInlineViewHelper = false;
 
     private void updateTranslationDocument(final Pair<String, Pair<Boolean, Boolean>> unitId, final String unitValue) throws InvalidXliffFileException {
         final XLIFFDocument xliffDocument = new XLIFFDocument(selectedFile);
@@ -66,6 +67,7 @@ public class CreateXLIFFTranslationAction extends AbstractXLIFFAction {
 
         Pair<String, Pair<Boolean, Boolean>> inputDialogResult = showInputDialog();
         preserveSpaces = inputDialogResult.getSecond().getFirst();
+        useInlineViewHelper = inputDialogResult.getSecond().getSecond();
         if (selectedFile != null) {
             try {
                 updateTranslationDocument(inputDialogResult, selectedText);
@@ -98,7 +100,7 @@ public class CreateXLIFFTranslationAction extends AbstractXLIFFAction {
 
     @NotNull
     private Pair<String, Pair<Boolean, Boolean>> showInputDialog() {
-        CreateTranslationInput dialog = new CreateTranslationInput(preserveSpaces);
+        CreateTranslationInput dialog = new CreateTranslationInput(preserveSpaces, useInlineViewHelper);
         dialog.show();
         return Pair.create(dialog.getInputString(), Pair.create(dialog.shouldPreserveSpace(), dialog.useInlineViewHelper()));
     }
