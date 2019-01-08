@@ -16,8 +16,7 @@ import com.intellij.psi.PsiDocumentManager;
 import de.onigunn.intellij.xliff.InvalidXliffFileException;
 import de.onigunn.intellij.xliff.XLIFFDocument;
 import de.onigunn.intellij.xliff.ui.CreateTranslationInput;
-
-import java.io.IOException;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Created by onigunn on 11.12.15.
@@ -26,32 +25,26 @@ public class CreateXLIFFTranslationAction extends AbstractXLIFFAction {
 
     protected boolean preserveSpaces = false;
 
-    private void updateTranslationDocument(final Pair<String, Pair<Boolean, Boolean>> unitId, final String unitValue) throws IOException, InvalidXliffFileException {
+    private void updateTranslationDocument(final Pair<String, Pair<Boolean, Boolean>> unitId, final String unitValue) throws InvalidXliffFileException {
         final XLIFFDocument xliffDocument = new XLIFFDocument(selectedFile);
-        WriteCommandAction.runWriteCommandAction(selectedFile.getProject(), new Runnable() {
-            @Override
-            public void run() {
-                Project project = selectedFile.getProject();
-                xliffDocument.createTranslationUnit(unitId, unitValue);
-                reformatDocument(project);
-                saveDocument(project);
-            }
+        WriteCommandAction.runWriteCommandAction(selectedFile.getProject(), () -> {
+            Project project = selectedFile.getProject();
+            xliffDocument.createTranslationUnit(unitId, unitValue);
+            reformatDocument(project);
+            saveDocument(project);
         });
     }
 
-    private void replaceSelectedTextWithViewHelper(final String translationKeyId, final Project project, final Editor editor) {
-        WriteCommandAction.runWriteCommandAction(project, new Runnable() {
-            @Override
-            public void run() {
-                final int selectionStart = editor.getSelectionModel().getSelectionStart();
-                final int selectionEnd = editor.getSelectionModel().getSelectionEnd();
+    private void replaceSelectedInput(@NotNull final Editor editor, final String translationKeyId) {
+        WriteCommandAction.runWriteCommandAction(editor.getProject(), () -> {
+            final int selectionStart = editor.getSelectionModel().getSelectionStart();
+            final int selectionEnd = editor.getSelectionModel().getSelectionEnd();
 
-                final String replacement = String.format("<f:translate key=\"%s\" />", translationKeyId);
-                final Document editorDocument = editor.getDocument();
+            final String replacement = String.format("<f:translate key=\"%s\" />", translationKeyId);
+            final Document editorDocument = editor.getDocument();
 
-                editorDocument.replaceString(selectionStart, selectionEnd, replacement);
-                FileDocumentManager.getInstance().saveDocument(editorDocument);
-            }
+            editorDocument.replaceString(selectionStart, selectionEnd, replacement);
+            FileDocumentManager.getInstance().saveDocument(editorDocument);
         });
     }
 
@@ -59,7 +52,6 @@ public class CreateXLIFFTranslationAction extends AbstractXLIFFAction {
     protected void doAction(AnActionEvent e) {
         final Editor editor = e.getData(CommonDataKeys.EDITOR);
         final String selectedText = editor.getSelectionModel().getSelectedText();
-        final Project project = e.getProject();
 
         Pair<String, Pair<Boolean, Boolean>> inputDialog = showInputDialog();
         String translationKeyId = inputDialog.getFirst();
@@ -67,11 +59,11 @@ public class CreateXLIFFTranslationAction extends AbstractXLIFFAction {
         if (selectedFile != null) {
             try {
                 updateTranslationDocument(inputDialog, selectedText);
-                replaceSelectedTextWithViewHelper(translationKeyId, project, editor);
-            } catch (IOException | InvalidXliffFileException e1) {
+                replaceSelectedInput(editor, translationKeyId);
+            } catch (InvalidXliffFileException e1) {
                 e1.printStackTrace();
                 myNotificationGroup.createNotification(e1.getMessage(), NotificationType.ERROR)
-                        .notify(project);
+                        .notify(e.getProject());
             }
 
         }
@@ -94,6 +86,7 @@ public class CreateXLIFFTranslationAction extends AbstractXLIFFAction {
         FileDocumentManager.getInstance().saveDocument(document);
     }
 
+    @NotNull
     private Pair<String, Pair<Boolean, Boolean>> showInputDialog() {
         CreateTranslationInput dialog = new CreateTranslationInput(preserveSpaces);
         dialog.show();
