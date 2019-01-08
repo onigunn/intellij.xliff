@@ -49,6 +49,7 @@ public class CreateXLIFFTranslationAction extends AbstractXLIFFAction {
 
                 final String replacement = String.format("<f:translate key=\"%s\" />", translationKeyId);
                 final Document editorDocument = editor.getDocument();
+
                 editorDocument.replaceString(selectionStart, selectionEnd, replacement);
                 FileDocumentManager.getInstance().saveDocument(editorDocument);
             }
