@@ -41,16 +41,19 @@ public class CreateXLIFFTranslationAction extends AbstractXLIFFAction {
     private void replaceSelectedInput(@NotNull final Editor editor, final Pair<String, Pair<Boolean, Boolean>> inputDialogResult) {
         final Project project = editor.getProject();
         WriteCommandAction.runWriteCommandAction(project, () -> {
-            final int selectionStart = editor.getSelectionModel().getSelectionStart();
-            final int selectionEnd = editor.getSelectionModel().getSelectionEnd();
+            int selectionStart = editor.getSelectionModel().getSelectionStart();
+            int selectionEnd = editor.getSelectionModel().getSelectionEnd();
 
             PsiFile psiFile = PsiDocumentManager.getInstance(project).getPsiFile(editor.getDocument());
             TextReplaceProcessor replaceProcessor = new TextReplaceProcessor(inputDialogResult, psiFile);
-
+            if (replaceProcessor.replacementNeedsOffset(editor.getSelectionModel())) {
+                selectionStart -= 1;
+                selectionEnd += 1;
+            }
             final String replacement = replaceProcessor.replacement();
+
             if (replacement != null) {
                 final Document editorDocument = editor.getDocument();
-
                 editorDocument.replaceString(selectionStart, selectionEnd, replacement);
                 FileDocumentManager.getInstance().saveDocument(editorDocument);
             } else {
