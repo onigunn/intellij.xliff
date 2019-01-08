@@ -20,13 +20,13 @@ public class XLIFFDocument {
         bodySubTag = xmlFile.getRootTag().findFirstSubTag("file").findFirstSubTag("body");
     }
 
-    public void createTranslationUnit(Pair<String, Boolean> userInput, String value) {
+    public void createTranslationUnit(Pair<String, Pair<Boolean, Boolean>> userInput, String value) {
         if (!this.bodySubTag.isWritable() && !this.bodySubTag.isValid()) return;
 
         String transUnitId = userInput.getFirst();
         XmlTag transUnitTag = findTransUnitByIdAttribute(transUnitId);
         if (transUnitTag == null) {
-            transUnitTag = createTransUnitTag(transUnitId, userInput.getSecond());
+            transUnitTag = createTransUnitTag(transUnitId, userInput.getSecond().getFirst());
         }
         transUnitTag.findFirstSubTag("source").getValue().setText(value);
     }

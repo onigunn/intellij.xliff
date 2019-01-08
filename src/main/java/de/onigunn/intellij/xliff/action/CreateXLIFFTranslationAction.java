@@ -11,12 +11,11 @@ import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.Messages;
-import com.intellij.openapi.ui.NonEmptyInputValidator;
 import com.intellij.openapi.util.Pair;
 import com.intellij.psi.PsiDocumentManager;
 import de.onigunn.intellij.xliff.InvalidXliffFileException;
 import de.onigunn.intellij.xliff.XLIFFDocument;
+import de.onigunn.intellij.xliff.ui.CreateTranslationInput;
 
 import java.io.IOException;
 
@@ -27,7 +26,7 @@ public class CreateXLIFFTranslationAction extends AbstractXLIFFAction {
 
     protected boolean preserveSpaces = false;
 
-    private void updateTranslationDocument(final Pair<String, Boolean> unitId, final String unitValue) throws IOException, InvalidXliffFileException {
+    private void updateTranslationDocument(final Pair<String, Pair<Boolean, Boolean>> unitId, final String unitValue) throws IOException, InvalidXliffFileException {
         final XLIFFDocument xliffDocument = new XLIFFDocument(selectedFile);
         WriteCommandAction.runWriteCommandAction(selectedFile.getProject(), new Runnable() {
             @Override
@@ -61,15 +60,14 @@ public class CreateXLIFFTranslationAction extends AbstractXLIFFAction {
         final Editor editor = e.getData(CommonDataKeys.EDITOR);
         final String selectedText = editor.getSelectionModel().getSelectedText();
         final Project project = e.getProject();
-        final Pair<String, Boolean> userInputPair = Messages.showInputDialogWithCheckBox("Translation key",
-                                                        "Translation key", "Preserve space?",
-                                                        preserveSpaces, true, Messages.getQuestionIcon(), "", new NonEmptyInputValidator());
 
-        preserveSpaces = userInputPair.getSecond();
+        Pair<String, Pair<Boolean, Boolean>> inputDialog = showInputDialog();
+        String translationKeyId = inputDialog.getFirst();
+        preserveSpaces = inputDialog.getSecond().getFirst();
         if (selectedFile != null) {
             try {
-                updateTranslationDocument(userInputPair, selectedText);
-                replaceSelectedTextWithViewHelper(userInputPair.getFirst(), project, editor);
+                updateTranslationDocument(inputDialog, selectedText);
+                replaceSelectedTextWithViewHelper(translationKeyId, project, editor);
             } catch (IOException | InvalidXliffFileException e1) {
                 e1.printStackTrace();
                 myNotificationGroup.createNotification(e1.getMessage(), NotificationType.ERROR)
@@ -94,6 +92,12 @@ public class CreateXLIFFTranslationAction extends AbstractXLIFFAction {
         psiDocumentManager.doPostponedOperationsAndUnblockDocument(document);
 
         FileDocumentManager.getInstance().saveDocument(document);
+    }
+
+    private Pair<String, Pair<Boolean, Boolean>> showInputDialog() {
+        CreateTranslationInput dialog = new CreateTranslationInput(preserveSpaces);
+        dialog.show();
+        return Pair.create(dialog.getInputString(), Pair.create(dialog.shouldPreserveSpace(), dialog.useInlineViewHelper()));
     }
 
 }
