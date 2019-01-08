@@ -4,7 +4,7 @@ plugins {
 }
 
 group 'de.onigunn'
-version '0.2.0' 
+version '0.2.0'
 
 sourceCompatibility = 1.8
 
@@ -14,5 +14,5 @@ repositories {
 
 intellij {
     version '2017.3'
+    updateSinceUntilBuild false
 }
-
