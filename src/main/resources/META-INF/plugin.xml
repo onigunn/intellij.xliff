@@ -2,7 +2,7 @@
     <id>de.onigunn.intellij.xliff</id>
     <name>TYPO3 XLIFF Utility</name>
     <version>0.1.0</version>
-    <vendor email="info@onigunn.de" url="http://www.onigunn.de">onigunn.de</vendor>
+    <vendor email="info@guengoeren.eu" url="http://guengoeren.eu">Onur Güngören</vendor>
 
     <description><![CDATA[
       Eases the creation/updating of XLIFF translations. Select target text and invoke the "Create/Update XLIFF translation" action.
@@ -10,6 +10,11 @@
     ]]></description>
 
     <change-notes><![CDATA[
+    <b>0.2.0</b>
+    <ul>
+        <li>added support for inline view helper syntax</li>
+        <li>added support for context aware replacement</li>
+    </ul>
     <b>0.1.0</b>
     <ul>
         <li>tag values are now CDATA quoted if required</li>
@@ -23,19 +28,6 @@
     <li>Changed document format option</li>
     <li>improved document save/commits</li>
     </ul>
-
-    <b>0.0.8</b>
-    <ul>
-    <li>fix for line separator exception on windows clients</li>
-    </ul>
-    <b>0.0.7</b>
-      <ul>
-      <li>fixed exceptions on code format</li>
-      </ul>
-    <b>0.0.6</b>
-      <ul>
-      <li>improved file select on invoking action</li>
-      </ul>
     ]]>
     </change-notes>
 
