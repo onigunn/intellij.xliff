@@ -48,7 +48,7 @@ public class XLIFFDocument {
     @Nullable
     private XmlTag findTransUnitByIdAttribute(String id) {
         for (XmlTag xmlTag : bodySubTag.getSubTags()) {
-            if (xmlTag.getAttribute("id").getValue().equals(id)) {
+            if (xmlTag.getAttribute("id") != null && xmlTag.getAttribute("id").getValue().equals(id)) {
                 return xmlTag;
             }
         }

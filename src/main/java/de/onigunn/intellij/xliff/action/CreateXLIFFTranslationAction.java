@@ -13,7 +13,9 @@ import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Pair;
 import com.intellij.psi.PsiDocumentManager;
+import com.intellij.psi.PsiFile;
 import de.onigunn.intellij.xliff.InvalidXliffFileException;
+import de.onigunn.intellij.xliff.TextReplaceProcessor;
 import de.onigunn.intellij.xliff.XLIFFDocument;
 import de.onigunn.intellij.xliff.ui.CreateTranslationInput;
 import org.jetbrains.annotations.NotNull;
@@ -35,16 +37,25 @@ public class CreateXLIFFTranslationAction extends AbstractXLIFFAction {
         });
     }
 
-    private void replaceSelectedInput(@NotNull final Editor editor, final String translationKeyId) {
-        WriteCommandAction.runWriteCommandAction(editor.getProject(), () -> {
+    private void replaceSelectedInput(@NotNull final Editor editor, final Pair<String, Pair<Boolean, Boolean>> inputDialogResult) {
+        final Project project = editor.getProject();
+        WriteCommandAction.runWriteCommandAction(project, () -> {
             final int selectionStart = editor.getSelectionModel().getSelectionStart();
             final int selectionEnd = editor.getSelectionModel().getSelectionEnd();
 
-            final String replacement = String.format("<f:translate key=\"%s\" />", translationKeyId);
-            final Document editorDocument = editor.getDocument();
+            PsiFile psiFile = PsiDocumentManager.getInstance(project).getPsiFile(editor.getDocument());
+            TextReplaceProcessor replaceProcessor = new TextReplaceProcessor(inputDialogResult, psiFile);
 
-            editorDocument.replaceString(selectionStart, selectionEnd, replacement);
-            FileDocumentManager.getInstance().saveDocument(editorDocument);
+            final String replacement = replaceProcessor.replacement();
+            if (replacement != null) {
+                final Document editorDocument = editor.getDocument();
+
+                editorDocument.replaceString(selectionStart, selectionEnd, replacement);
+                FileDocumentManager.getInstance().saveDocument(editorDocument);
+            } else {
+                myNotificationGroup.createNotification("File type not supported", NotificationType.ERROR)
+                        .notify(project);
+            }
         });
     }
 
@@ -53,13 +64,12 @@ public class CreateXLIFFTranslationAction extends AbstractXLIFFAction {
         final Editor editor = e.getData(CommonDataKeys.EDITOR);
         final String selectedText = editor.getSelectionModel().getSelectedText();
 
-        Pair<String, Pair<Boolean, Boolean>> inputDialog = showInputDialog();
-        String translationKeyId = inputDialog.getFirst();
-        preserveSpaces = inputDialog.getSecond().getFirst();
+        Pair<String, Pair<Boolean, Boolean>> inputDialogResult = showInputDialog();
+        preserveSpaces = inputDialogResult.getSecond().getFirst();
         if (selectedFile != null) {
             try {
-                updateTranslationDocument(inputDialog, selectedText);
-                replaceSelectedInput(editor, translationKeyId);
+                updateTranslationDocument(inputDialogResult, selectedText);
+                replaceSelectedInput(editor, inputDialogResult);
             } catch (InvalidXliffFileException e1) {
                 e1.printStackTrace();
                 myNotificationGroup.createNotification(e1.getMessage(), NotificationType.ERROR)
